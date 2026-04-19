@@ -11,14 +11,14 @@ async function getAIResponse(question) {
           {
             role: "system",
             content:
-              "You are a helpful assistant. Always answer in clear, concise bullet points. Use 4–6 short points. Avoid long paragraphs.",
+              "Answer ONLY in bullet points.\nEach point must be on a new line.\nKeep it short (4–6 points).\nDo NOT write paragraphs.",
           },
           {
             role: "user",
             content: question,
           },
         ],
-        temperature: 0.4, // more consistent, less random
+        temperature: 0.4,
       },
       {
         headers: {
@@ -28,10 +28,17 @@ async function getAIResponse(question) {
       }
     );
 
-    return response.data.choices[0].message.content;
+    // ✅ SAFETY CHECK (prevents crash if response changes)
+    const content =
+      response.data?.choices?.[0]?.message?.content ||
+      "No response from AI";
+
+    return content;
   } catch (error) {
-    console.error("GROQ ERROR:", error.response?.data || error.message);
-    throw error;
+    console.error("❌ GROQ ERROR:", error.response?.data || error.message);
+
+    // ✅ Return clean error instead of crashing server
+    return "❌ AI service is temporarily unavailable. Try again.";
   }
 }
 
