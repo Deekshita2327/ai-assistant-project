@@ -13,7 +13,7 @@ function App() {
       setLoading(true);
       setAnswer("");
 
-      const res = await axios.post("http://localhost:5000/api/chat", {
+      axios.post("https://ai-assistant-project-m2dq.onrender.com/api/chat", {
         question,
       });
 
