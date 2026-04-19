@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 const chatRoutes = require("./routes/chatRoutes");
@@ -13,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // ======================
-// ✅ ROOT ROUTE (for Render check)
+// ✅ ROOT ROUTE
 // ======================
 app.get("/", (req, res) => {
   res.send("🚀 AI Backend Running Successfully");
@@ -25,7 +26,15 @@ app.get("/", (req, res) => {
 app.use("/api/chat", chatRoutes);
 
 // ======================
-// ✅ ERROR HANDLER (VERY IMPORTANT)
+// ✅ DATABASE CONNECTION (IMPORTANT FIX)
+// ======================
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB Error:", err));
+
+// ======================
+// ✅ ERROR HANDLER
 // ======================
 app.use((err, req, res, next) => {
   console.error("❌ Server Error:", err.message);
@@ -44,4 +53,5 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log("🔍 ENV CHECK:");
   console.log("GROQ_API_KEY:", process.env.GROQ_API_KEY ? "Loaded" : "Missing");
+  console.log("MONGO_URI:", process.env.MONGO_URI ? "Loaded" : "Missing");
 });
