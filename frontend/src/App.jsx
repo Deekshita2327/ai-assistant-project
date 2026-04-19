@@ -13,9 +13,11 @@ function App() {
       setLoading(true);
       setAnswer("");
 
-      axios.post("https://ai-assistant-project-m2dq.onrender.com/api/chat", {
-        question,
-      });
+      // ✅ FIXED: store response properly
+      const res = await axios.post(
+        "https://ai-assistant-project-m2dq.onrender.com/api/chat",
+        { question }
+      );
 
       setAnswer(res.data.answer);
     } catch (err) {
@@ -42,14 +44,16 @@ function App() {
         {loading ? "Loading..." : "Ask"}
       </button>
 
-      {/* Loading */}
+      {/* ✅ Thinking Animation */}
       {loading && <p style={styles.loading}>🤖 Thinking...</p>}
 
-      {/* Answer in bullet points */}
+      {/* ✅ Answer as bullet points */}
       {answer && (
         <ul style={styles.answer}>
           {answer.split("\n").map((line, index) => (
-            <li key={index}>{line}</li>
+            <li key={index}>
+              {line.replace(/^[-•*]\s*/, "")}
+            </li>
           ))}
         </ul>
       )}
